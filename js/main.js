@@ -1,310 +1,239 @@
-;(function () {
-	
-	'use strict';
-
-
-
-	var isMobile = {
-		Android: function() {
-			return navigator.userAgent.match(/Android/i);
-		},
-			BlackBerry: function() {
-			return navigator.userAgent.match(/BlackBerry/i);
-		},
-			iOS: function() {
-			return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-		},
-			Opera: function() {
-			return navigator.userAgent.match(/Opera Mini/i);
-		},
-			Windows: function() {
-			return navigator.userAgent.match(/IEMobile/i);
-		},
-			any: function() {
-			return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
-		}
-	};
-
-	var fullHeight = function() {
-
-		if ( !isMobile.any() ) {
-			$('.js-fullheight').css('height', $(window).height());
-			$(window).resize(function(){
-				$('.js-fullheight').css('height', $(window).height());
-			});
-		}
-
-	};
-
-
-	var counter = function() {
-		$('.js-counter').countTo({
-			 formatter: function (value, options) {
-	      return value.toFixed(options.decimals);
-	    },
-		});
-	};
-
-
-	var counterWayPoint = function() {
-		if ($('#colorlib-counter').length > 0 ) {
-			$('#colorlib-counter').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this.element).hasClass('animated') ) {
-					setTimeout( counter , 400);					
-					$(this.element).addClass('animated');
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	// Animations
-	var contentWayPoint = function() {
-		var i = 0;
-		$('.animate-box').waypoint( function( direction ) {
-
-			if( direction === 'down' && !$(this.element).hasClass('animated') ) {
-				
-				i++;
-
-				$(this.element).addClass('item-animate');
-				setTimeout(function(){
-
-					$('body .animate-box.item-animate').each(function(k){
-						var el = $(this);
-						setTimeout( function () {
-							var effect = el.data('animate-effect');
-							if ( effect === 'fadeIn') {
-								el.addClass('fadeIn animated');
-							} else if ( effect === 'fadeInLeft') {
-								el.addClass('fadeInLeft animated');
-							} else if ( effect === 'fadeInRight') {
-								el.addClass('fadeInRight animated');
-							} else {
-								el.addClass('fadeInUp animated');
-							}
-
-							el.removeClass('item-animate');
-						},  k * 200, 'easeInOutExpo' );
-					});
-					
-				}, 100);
-				
-			}
-
-		} , { offset: '85%' } );
-	};
-
-
-	var burgerMenu = function() {
-
-		$('.js-colorlib-nav-toggle').on('click', function(event){
-			event.preventDefault();
-			var $this = $(this);
-
-			if ($('body').hasClass('offcanvas')) {
-				$this.removeClass('active');
-				$('body').removeClass('offcanvas');	
-			} else {
-				$this.addClass('active');
-				$('body').addClass('offcanvas');	
-			}
-		});
-
-
-
-	};
-
-	// Click outside of offcanvass
-	var mobileMenuOutsideClick = function() {
-
-		$(document).click(function (e) {
-	    var container = $("#colorlib-aside, .js-colorlib-nav-toggle");
-	    if (!container.is(e.target) && container.has(e.target).length === 0) {
-
-	    	if ( $('body').hasClass('offcanvas') ) {
-
-    			$('body').removeClass('offcanvas');
-    			$('.js-colorlib-nav-toggle').removeClass('active');
-			
-	    	}
-	    	
-	    }
-		});
-
-		$(window).scroll(function(){
-			if ( $('body').hasClass('offcanvas') ) {
-
-    			$('body').removeClass('offcanvas');
-    			$('.js-colorlib-nav-toggle').removeClass('active');
-			
-	    	}
-		});
-
-	};
-
-	var clickMenu = function() {
-
-		$('#navbar a:not([class="external"])').click(function(event){
-			var section = $(this).data('nav-section'),
-				navbar = $('#navbar');
-
-				if ( $('[data-section="' + section + '"]').length ) {
-			    	$('html, body').animate({
-			        	scrollTop: $('[data-section="' + section + '"]').offset().top - 55
-			    	}, 500);
-			   }
-
-		    if ( navbar.is(':visible')) {
-		    	navbar.removeClass('in');
-		    	navbar.attr('aria-expanded', 'false');
-		    	$('.js-colorlib-nav-toggle').removeClass('active');
-		    }
-
-		    event.preventDefault();
-		    return false;
-		});
-
-
-	};
-
-	// Reflect scrolling in navigation
-	var navActive = function(section) {
-
-		var $el = $('#navbar > ul');
-		$el.find('li').removeClass('active');
-		$el.each(function(){
-			$(this).find('a[data-nav-section="'+section+'"]').closest('li').addClass('active');
-		});
-
-	};
-
-	var navigationSection = function() {
-
-		var $section = $('section[data-section]');
-		
-		$section.waypoint(function(direction) {
-		  	
-		  	if (direction === 'down') {
-		    	navActive($(this.element).data('section'));
-		  	}
-		}, {
-	  		offset: '150px'
-		});
-
-		$section.waypoint(function(direction) {
-		  	if (direction === 'up') {
-		    	navActive($(this.element).data('section'));
-		  	}
-		}, {
-		  	offset: function() { return -$(this.element).height() + 155; }
-		});
-
-	};
-
-
-
-
-
-
-	var sliderMain = function() {
-		
-	  	$('#colorlib-hero .flexslider').flexslider({
-			animation: "fade",
-			slideshowSpeed: 5000,
-			directionNav: true,
-			start: function(){
-				setTimeout(function(){
-					$('.slider-text').removeClass('animated fadeInUp');
-					$('.flex-active-slide').find('.slider-text').addClass('animated fadeInUp');
-				}, 500);
-			},
-			before: function(){
-				setTimeout(function(){
-					$('.slider-text').removeClass('animated fadeInUp');
-					$('.flex-active-slide').find('.slider-text').addClass('animated fadeInUp');
-				}, 500);
-			}
-
-	  	});
-
-	};
-
-	var stickyFunction = function() {
-
-		var h = $('.image-content').outerHeight();
-
-		if ($(window).width() <= 992 ) {
-			$("#sticky_item").trigger("sticky_kit:detach");
-		} else {
-			$('.sticky-parent').removeClass('stick-detach');
-			$("#sticky_item").trigger("sticky_kit:detach");
-			$("#sticky_item").trigger("sticky_kit:unstick");
-		}
-
-		$(window).resize(function(){
-			var h = $('.image-content').outerHeight();
-			$('.sticky-parent').css('height', h);
-
-
-			if ($(window).width() <= 992 ) {
-				$("#sticky_item").trigger("sticky_kit:detach");
-			} else {
-				$('.sticky-parent').removeClass('stick-detach');
-				$("#sticky_item").trigger("sticky_kit:detach");
-				$("#sticky_item").trigger("sticky_kit:unstick");
-
-				$("#sticky_item").stick_in_parent();
-			}
-			
-
-			
-
-		});
-
-		$('.sticky-parent').css('height', h);
-
-		$("#sticky_item").stick_in_parent();
-
-	};
-
-	var owlCrouselFeatureSlide = function() {
-		$('.owl-carousel').owlCarousel({
-			animateOut: 'fadeOut',
-		   animateIn: 'fadeIn',
-		   autoplay: true,
-		   loop:true,
-		   margin:0,
-		   nav:true,
-		   dots: false,
-		   autoHeight: true,
-		   items: 1,
-		   navText: [
-		      "<i class='icon-arrow-left3 owl-direction'></i>",
-		      "<i class='icon-arrow-right3 owl-direction'></i>"
-	     	]
-		})
-	};
-
-	// Document on load.
-	$(function(){
-		fullHeight();
-		counter();
-		counterWayPoint();
-		contentWayPoint();
-		burgerMenu();
-
-		clickMenu();
-		// navActive();
-		navigationSection();
-		// windowScroll();
-
-
-		mobileMenuOutsideClick();
-		sliderMain();
-		stickyFunction();
-		owlCrouselFeatureSlide();
+(function($) {
+	"use strict";
+
+	$(window).on('load', function() {
+	    $(".preloader").fadeOut("slow", function() {
+	        $(".preloader-left").addClass("slide-left");
+	    });
+
+	    $('#lionhero').owlCarousel({
+	        animateOut: 'fadeOut',
+	        nav: true,
+	        navText: [
+	            '<i class="ion-ios-arrow-thin-left"></i>',
+	            '<i class="ion-ios-arrow-thin-right"></i>'
+	        ],
+	        items: 1,
+	        navSpeed: 400,
+	        loop: true,
+	        autoplay: true,
+	        autoplayTimeout: 4000,
+	        autoplayHoverPause: true,
+	    });
+
+	    $('#liontextslider').owlCarousel({
+	        nav: false,
+	        items: 1,
+	        navSpeed: 400,
+	        loop: true,
+	        autoplay: true,
+	        autoplayTimeout: 4000,
+	        autoplayHoverPause: true,
+	    });
+
+	    $('#liontestimonial').owlCarousel({
+	        nav: true,
+	        navText: [
+	            '<i class="ion-ios-arrow-thin-left"></i>',
+	            '<i class="ion-ios-arrow-thin-right"></i>'
+	        ],
+	        items: 1,
+	        navSpeed: 400,
+	        loop: true,
+	        autoplay: true,
+	        autoplayTimeout: 4000,
+	        autoplayHoverPause: true,
+	    });
 	});
 
+	$('.portfolio-block, .menu-item').on('click', function() {
 
-}());
+	    //Portfolio masonry
+	    var $container = $('#portfolio-container');
+	    $container.isotope({
+	        masonry: {
+	            columnWidth: '.portfolio-item'
+	        },
+	        itemSelector: '.portfolio-item'
+	    });
+	    $('#filters').on('click', 'li', function() {
+	        $('#filters li').removeClass('active');
+	        $(this).addClass('active');
+	        var filterValue = $(this).attr('data-filter');
+	        $container.isotope({ filter: filterValue });
+	    });
+
+	});
+
+	// Typing Animation (Typed.js)
+	$('#element').typed({
+	    strings: ["UX, UI Designer", "Web App Developer", "Social Animal!"],
+	    typeSpeed: -50,
+	    loop: true,
+	    startDelay: 500,
+	    backDelay: 3000,
+	    contentType: 'html',
+	});
+
+	//Video background
+	$(".player").mb_YTPlayer({
+	    containment: '#video-wrapper',
+	    mute: true,
+	    showControls: false,
+	    quality: 'default',
+	    startAt: 5
+	});
+
+	//Portfolio Modal
+	$(document).on('click', '.open-project', function() {
+	    var projectUrl = $(this).attr("href");
+	    $('.inline-menu-container').removeClass('showx');
+	    $('.sidebar-menu').addClass('hidex');
+	    $('.content-blocks.pop').addClass('showx');
+	    $('.content-blocks.pop section').load(projectUrl+' .load-data > *');
+	    return false;
+	});
+
+	//Blog post Modal
+	$('.open-post').on('click', function() {
+	    var postUrl = $(this).attr("href");
+	    $('.inline-menu-container').removeClass('showx');
+	    $('.sidebar-menu').addClass('hidex');
+	    $('.content-blocks.pop').addClass('showx');
+	    $('.content-blocks.pop section').load(postUrl);
+	    return false;
+	});
+
+	//On Click Open Menu Items
+	$('.menu-block, .menu-item').on('click', function() {
+	    $('.name-block').addClass('reverse');
+	    $('.name-block-container').addClass('reverse');
+	    $('.menu-blocks').addClass('hidex');
+	    $('.inline-menu-container').addClass('showx');
+	    $('.inline-menu-container.style2').addClass('dark');
+	});
+	//On Click Open About/Resume Block
+	$('.about-block, .menu-item.about').on('click', function() {
+	    $('.content-blocks').removeClass('showx');
+	    $('.content-blocks.about').addClass('showx');
+	    $('.menu-item').removeClass('active');
+	    $('.menu-item.about').addClass('active');
+	});
+	//On Click Open Portfolio Block
+	$('.portfolio-block, .menu-item.portfolio').on('click', function() {
+	    $('.content-blocks').removeClass('showx');
+	    $('.content-blocks.portfolio').addClass('showx');
+	    $('.menu-item').removeClass('active');
+	    $('.menu-item.portfolio').addClass('active');
+	});
+	//On Click Open Blog Block
+	$('.blog-block, .menu-item.blog').on('click', function() {
+	    $('.content-blocks').removeClass('showx');
+	    $('.content-blocks.blog').addClass('showx');
+	    $('.menu-item').removeClass('active');
+	    $('.menu-item.blog').addClass('active');
+	});
+	//On Click Open Contact Block
+	$('.contact-block, .menu-item.contact').on('click', function() {
+	    $('.content-blocks').removeClass('showx');
+	    $('.content-blocks.contact').addClass('showx');
+	    $('.menu-item').removeClass('active');
+	    $('.menu-item.contact').addClass('active');
+	});
+
+	//On Click Close Blocks
+	$('#close').on('click', function() {
+	    $('.name-block').removeClass('reverse');
+	    $('.name-block-container').removeClass('reverse');
+	    $('.content-blocks').removeClass('showx');
+	    $('.menu-blocks').removeClass('hidex');
+	    $('.inline-menu-container').removeClass('showx');
+	    $('.menu-item').removeClass('active');
+	});
+	//On Click Close Blog Post And Project Details
+	$('#close-pop').on('click', function() {
+	    $('.content-blocks.pop').removeClass('showx');
+	    $('.sidebar-menu').removeClass('hidex');
+	    $('.inline-menu-container').addClass('showx');
+	    $('.content-blocks.pop section').empty();
+	});
+
+	$('.menu-block, .menu-item, #close').on('click', function() {
+	    $('.content-blocks').animate({ scrollTop: 0 }, 800);
+	});	
+
+	//Function for 'Index-Menu2.html'
+	$('#home').on('click', function() {
+	    $('.content-blocks').removeClass('showx');
+	    $('.menu-item').removeClass('active');
+	    $(this).addClass('active');
+	    $('.inline-menu-container.style2').removeClass('dark');
+	});
+
+	// Intialize Map
+	google.maps.event.addDomListener(window, 'load', init);
+
+	function init() {
+	    // Basic options for a simple Google Map
+	    // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
+	    var mapOptions = {
+	        // How zoomed in you want the map to start at (always required)
+	        zoom: 11,
+
+	        // The latitude and longitude to center the map (always required)
+	        center: new google.maps.LatLng(40.6700, -73.9400), 
+
+	        scrollwheel: false,
+
+
+	        // How you would like to style the map.
+	        // This is where you would paste any style found on Snazzy Maps.
+	        styles: [{
+	            featureType: 'all',
+	            stylers: [{
+	                saturation: -65
+	            }]
+	        }, {
+	            featureType: 'road.arterial',
+	            elementType: 'geometry',
+	            stylers: [{
+	                hue: '#00ffee'
+	            }, {
+	                saturation: 80
+	            }]
+	        }, {
+	            featureType: 'poi.business',
+	            elementType: 'labels',
+	            stylers: [{
+	                visibility: 'off'
+	            }]
+	        }]
+	    };
+
+	    // Get the HTML DOM element that will contain your map
+	    // We are using a div with id="map" seen below in the <body>
+	    var mapElement = document.getElementById('map');
+
+	    // Create the Google Map using our element and options defined above
+	    var map = new google.maps.Map(mapElement, mapOptions);
+
+	    var image = 'images/map-marker.png';
+	    // Let's also add a marker while we're at it
+	    var marker = new google.maps.Marker({
+	        position: new google.maps.LatLng(40.6700, -73.9400),
+	        map: map,
+	        icon: image,
+	        draggable: true,
+	        animation: google.maps.Animation.DROP
+	    });
+	    marker.addListener('click', toggleBounce);
+
+	    function toggleBounce() {
+	        if (marker.getAnimation() !== null) {
+	            marker.setAnimation(null);
+	        } else {
+	            marker.setAnimation(google.maps.Animation.BOUNCE);
+	        }
+	    }
+	}
+})(jQuery);
